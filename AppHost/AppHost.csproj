@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Api.ServiceDefaults\Api.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Api\Api.csproj" />
+    <ProjectReference Include="..\ServerApi\ServerApi.csproj" />
   </ItemGroup>
 
 </Project>

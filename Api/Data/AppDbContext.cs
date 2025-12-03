@@ -8,6 +8,7 @@ namespace Api.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Job> Jobs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,18 @@ namespace Api.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .IsRequired();
+
+            modelBuilder.Entity<Job>()
+                .Property(j => j.Title)
+                .HasMaxLength(200);
+
+            modelBuilder.Entity<Job>()
+                .Property(j => j.Description)
+                .HasMaxLength(1000);
+
+            modelBuilder.Entity<Job>()
+                .Property(j => j.Status)
+                .HasConversion<string>();
         }
     }
 }
