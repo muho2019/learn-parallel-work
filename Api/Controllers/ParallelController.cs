@@ -22,15 +22,6 @@ namespace Api.Controllers
         [HttpPost("hangfire")]
         public async Task<IActionResult> HangfireExample(CancellationToken cancellationToken)
         {
-            int jobId = CreateJob();
-
-            _backgroundJobClient.Enqueue<JobService>(service => service.ProcessJobRequestAsync(jobId, CancellationToken.None));
-
-            return Accepted(new { BatchId = jobId });
-        }
-
-        private int CreateJob()
-        {
             var job = new Job
             {
                 Title = "Sample Job",
@@ -39,7 +30,14 @@ namespace Api.Controllers
             };
             _appDbContext.Jobs.Add(job);
             _appDbContext.SaveChanges();
-            return job.Id;
+
+            var hangfireJobId = _backgroundJobClient.Enqueue<JobService>(service => service.ProcessJobRequestAsync(job.Id, CancellationToken.None));
+
+            job.HangfireJobId = hangfireJobId;
+
+            _appDbContext.SaveChanges();
+
+            return Accepted(new { JobId = job.Id });
         }
     }
 }

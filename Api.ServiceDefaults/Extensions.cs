@@ -29,7 +29,8 @@ namespace Microsoft.Extensions.Hosting
             builder.Services.ConfigureHttpClientDefaults(http =>
             {
                 // Turn on resilience by default
-                http.AddStandardResilienceHandler();
+                // 커스텀 RateLimiter 테스트를 위하여 주석 처리
+                //http.AddStandardResilienceHandler();
 
                 // Turn on service discovery by default
                 http.AddServiceDiscovery();

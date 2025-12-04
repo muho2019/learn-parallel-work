@@ -24,7 +24,7 @@ namespace Api.Services
         public async Task ProcessJobRequestAsync(int jobId, CancellationToken ct)
         {
             _logger.LogInformation("[Job {JobId}] 작업 상태 검사", jobId);
-            
+
             Job? job = _appDbContext.Jobs.FirstOrDefault(j => j.Id == jobId);
 
             if (job is null)
@@ -38,6 +38,9 @@ namespace Api.Services
                 return;
             }
 
+            job.Status = Status.InProgress;
+            await _appDbContext.SaveChangesAsync(ct);
+
             _logger.LogInformation("[Job {JobId}] 작업 시작", jobId);
 
             // 1. DB에서 배치 ID에 해당하는 요청 데이터 목록 조회 (가정)
@@ -50,7 +53,7 @@ namespace Api.Services
             // 3. Parallel.ForEachAsync로 제어된 병렬 처리
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 10,
+                MaxDegreeOfParallelism = 5,
                 CancellationToken = ct // Hangfire가 종료 신호를 보내면 여기서 감지
             };
 
@@ -64,7 +67,7 @@ namespace Api.Services
                     if (response.IsSuccessStatusCode)
                     {
                         // 성공 로직 (DB 업데이트 등)
-                        _logger.LogDebug("Request {Req} Success", req);
+                        _logger.LogInformation("Request {Req} Success", req);
                     }
                     else
                     {
@@ -82,8 +85,7 @@ namespace Api.Services
                 _logger.LogError(ex, "[Job {JobId}] Error", jobId);
             }
 
-            _appDbContext.Jobs.Update(job);
-            await _appDbContext.SaveChangesAsync();
+            await _appDbContext.SaveChangesAsync(ct);
         }
     }
 }
