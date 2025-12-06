@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ServerApi.Controllers
 {
@@ -14,6 +15,7 @@ namespace ServerApi.Controllers
         }
 
         [HttpGet]
+        [EnableRateLimiting("FixedPolicy")]
         public async Task<IActionResult> Get([FromQuery] int req,CancellationToken cancellationToken)
         {
             _logger.LogInformation("[Req {Req}] 작업 시작", req);

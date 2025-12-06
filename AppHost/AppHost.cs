@@ -1,6 +1,8 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var sqlServer = builder.AddSqlServer("db").AddDatabase("appdata");
+var sqlServer = builder.AddSqlServer("db")
+    .WithHostPort(55906)
+    .AddDatabase("appdata");
 
 builder.AddProject<Projects.Api>("origin")
     .WithReference(sqlServer)
